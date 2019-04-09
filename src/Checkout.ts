@@ -6,12 +6,12 @@ interface ICheckout {
 import { IProduct } from "./Product";
 
 class Checkout implements ICheckout {
-  constructor(public cart: IProduct[] = []) {}
+  constructor(public cart: ReadonlyArray<IProduct> = []) {}
   public total() {
     return 0;
   }
   public scan(product: IProduct) {
-    this.cart = [...this.cart, product]
+    this.cart = [...this.cart, product];
   }
 }
 
