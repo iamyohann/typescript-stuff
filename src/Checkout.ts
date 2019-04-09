@@ -10,8 +10,9 @@ class Checkout implements ICheckout {
   public total() {
     return 0;
   }
-  // @ts-ignore
-  public scan(product: IProduct) {}
+  public scan(product: IProduct) {
+    this.cart = [...this.cart, product]
+  }
 }
 
 export default Checkout;
