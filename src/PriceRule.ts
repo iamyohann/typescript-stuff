@@ -13,4 +13,4 @@ const threeFor2AppleTV = {
 const priceRules: IPriceRule[] = [threeFor2AppleTV];
 
 export default IPriceRule;
-export { priceRules, threeFor2AppleTV, IPriceRule }
+export { priceRules, threeFor2AppleTV, IPriceRule };
