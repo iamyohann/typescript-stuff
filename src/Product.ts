@@ -1,7 +1,9 @@
+type ProductSKU = "ipd" | "mbp" | "atv" | "vga"
+
 // Product instances are immutable once instantiated
 // Similar to case classes in Scala
 interface IProduct {
-  readonly sku: string;
+  readonly sku: ProductSKU;
   readonly name: string;
   readonly price: number;
 }
@@ -9,7 +11,7 @@ interface IProduct {
 class Product implements IProduct {
   // This is a default constructor shorthand
   // https://kendaleiv.com/typescript-constructor-assignment-public-and-private-keywords/
-  constructor(public sku: string, public name: string, public price: number) {}
+  constructor(public sku: ProductSKU, public name: string, public price: number) {}
 }
 
 const iPad = new Product("ipd", "Super iPad", 549.99);

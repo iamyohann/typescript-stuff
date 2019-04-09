@@ -1,18 +1,45 @@
-import { threeFor2AppleTV } from "./PriceRule"
-import { iPad, IProduct } from "./Product";
+import { threeFor2AppleTV, priceRules, superIPad, macbookVGAOffer } from "./PriceRule"
+import { iPad, IProduct, AppleTV, Macbook } from "./Product";
 
-test("3for2 no items", () => {
-  const cart: ReadonlyArray<IProduct> = [];
-  expect(threeFor2AppleTV.apply(cart)).toHaveLength(0);
+const cartPrice = (cart: ReadonlyArray<IProduct>) => cart.reduce((sum, p) => sum + p.price, 0);
+
+test("price rules no items", () => {
+  const emptyCart: ReadonlyArray<IProduct> = [];
+  priceRules.forEach((rule) => {
+    const result = rule.apply(emptyCart);
+    expect(result).toHaveLength(0);
+    expect(cartPrice(result)).toEqual(0);
+  });
 });
 
-test("3for2 single item", () => {
-  const cart: ReadonlyArray<IProduct> = [iPad];
-  expect(threeFor2AppleTV.apply(cart)
-  .reduce((sum, p) => sum + p.price, 0)).toEqual(iPad.price);
+test("3for2 single TV", () => {
+  const cart: ReadonlyArray<IProduct> = [AppleTV];
+  const rule = threeFor2AppleTV;
+  expect(cartPrice(rule.apply(cart))).toEqual(AppleTV.price);
 });
 
 test("3for2 3 Apple TVs", () => {
-  const cart: ReadonlyArray<IProduct> = [iPad];
-  expect(threeFor2AppleTV.apply(cart)).toHaveLength(1);
+  const cart: ReadonlyArray<IProduct> = [AppleTV, AppleTV, AppleTV];
+  const rule = threeFor2AppleTV;
+  expect(cartPrice(rule.apply(cart))).toEqual(AppleTV.price * 2);
+});
+
+test("superIpad more than 4 items", () => {
+  const cart4: ReadonlyArray<IProduct> = [iPad, iPad, iPad, iPad];
+  const cart5 = cart4.concat([iPad]);
+  const rule = superIPad;
+
+  expect(cartPrice(rule.apply(cart4))).toEqual(iPad.price * cart4.length);
+
+  rule.apply(cart5).forEach((item) => {
+    expect(item).toHaveProperty("price", 499.99);
+  });
+});
+
+test("macbook vga offer", () => {
+  const cart: ReadonlyArray<IProduct> = [Macbook];
+  const rule = macbookVGAOffer;
+  const result = rule.apply(cart);
+  expect(result.filter((p) => p.sku === "mbp").length)
+  .toEqual(result.filter((p) => p.sku === "vga").length);
 });
