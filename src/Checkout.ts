@@ -3,12 +3,19 @@ interface ICheckout {
   total(): number;
   scan(product: IProduct): void;
 }
+import IPriceRule from "./PriceRule";
 import { IProduct } from "./Product";
 
 class Checkout implements ICheckout {
-  constructor(public cart: ReadonlyArray<IProduct> = []) {}
+  constructor(public priceRules: ReadonlyArray<IPriceRule> = [], public cart: ReadonlyArray<IProduct> = []) {}
   public total() {
-    return 0;
+    let cart = this.cart;
+
+    for (const rule of this.priceRules) {
+      cart = rule.apply(cart);
+    }
+
+    return cart.reduce((sum, p) => sum + p.price, 0);
   }
   public scan(product: IProduct) {
     this.cart = [...this.cart, product];

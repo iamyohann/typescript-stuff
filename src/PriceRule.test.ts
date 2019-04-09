@@ -1,5 +1,5 @@
 import { threeFor2AppleTV, priceRules, superIPad, macbookVGAOffer } from "./PriceRule"
-import { iPad, IProduct, AppleTV, Macbook } from "./Product";
+import { iPad, IProduct, AppleTV, Macbook, VGAAdapter } from "./Product";
 
 const cartPrice = (cart: ReadonlyArray<IProduct>) => cart.reduce((sum, p) => sum + p.price, 0);
 
@@ -42,4 +42,15 @@ test("macbook vga offer", () => {
   const result = rule.apply(cart);
   expect(result.filter((p) => p.sku === "mbp").length)
   .toEqual(result.filter((p) => p.sku === "vga").length);
+});
+
+test("macbook vga offer + existing vga", () => {
+  const cart: ReadonlyArray<IProduct> = [Macbook, VGAAdapter, VGAAdapter];
+  const rule = macbookVGAOffer;
+  const result = rule.apply(cart);
+  expect(result.filter((p) => p.sku === "vga").length)
+  .toEqual(
+    cart.filter((p) => p.sku === "mbp").length +
+    cart.filter((p) => p.sku === "vga").length,
+  );
 });
