@@ -7,6 +7,7 @@ import IPriceRule from "./PriceRule";
 import { IProduct } from "./Product";
 
 class Checkout implements ICheckout {
+  /* istanbul ignore next line */
   constructor(public priceRules: ReadonlyArray<IPriceRule> = [], public cart: ReadonlyArray<IProduct> = []) {}
   public total() {
     let cart = this.cart;
