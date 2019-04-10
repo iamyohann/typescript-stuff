@@ -1,6 +1,7 @@
 import Checkout from "./Checkout";
-import Product, { AppleTV, VGAAdapter, Macbook, iPad } from "./Product";
-import { threeFor2AppleTV, superIPad, macbookVGAOffer } from "./PriceRule";
+import Product from "./Product";
+import { threeFor2AppleTV } from "./PriceRule";
+import 'jest-extended';
 
 test("Checkout returns correct total", () => {
   const c = new Checkout();
@@ -18,83 +19,36 @@ test("Checkout scans items correctly", () => {
   expect(c.cart).toHaveLength(1);
 });
 
-test("Checkout with no rules", () => {
-  // no price rules
-  const checkoutNoRules = new Checkout([]);
-  const items = [
-    AppleTV,
-    AppleTV,
-    AppleTV,
-    VGAAdapter,
-    Macbook,
-    Macbook,
-    iPad,
-  ]
-  items.forEach(i => checkoutNoRules.scan(i));
+test("Expect price rules to be invoked during total", () => {
+  const rule = threeFor2AppleTV;
+  const ruleApply = jest.spyOn(rule, "apply");
 
-  expect(checkoutNoRules.cart.length).toEqual(items.length);
-  expect(checkoutNoRules.total())
-  .toEqual(items.map(i => i.price).reduce((sum, price) => sum + price, 0));
+  const c = new Checkout([
+    threeFor2AppleTV,
+  ]);
+  c.scan(new Product("mbp", "Foo", 10.0));
+  c.total();
+  expect(ruleApply).toHaveBeenCalledTimes(1);
 });
 
-test("Scenario 1", () => {
-  // no price rules
-  const checkout = new Checkout([
-    threeFor2AppleTV,
-    superIPad,
-    macbookVGAOffer,
-  ]);
-  const items = [
-    AppleTV,
-    AppleTV,
-    AppleTV,
-    VGAAdapter,
-  ];
-  items.forEach(i => checkout.scan(i));
+test("Expected rules to be called in correct order", () => {
+  const rule1 = {
+    apply: jest.fn().mockImplementation(a => a),
+  };
 
-  expect(checkout.cart.length).toEqual(items.length);
-  expect(checkout.total())
-  .toEqual(249.0);
-});
+  const rule2 = {
+    apply: jest.fn().mockImplementation(a => a),
+  };
 
-test("Scenario 2", () => {
-  // no price rules
-  const checkout = new Checkout([
-    threeFor2AppleTV,
-    superIPad,
-    macbookVGAOffer,
-  ]);
-  const items = [
-    AppleTV,
-    iPad,
-    iPad,
-    AppleTV,
-    iPad,
-    iPad,
-    iPad,
-  ];
-  items.forEach(i => checkout.scan(i));
+  const rule3 = {
+    apply: jest.fn().mockImplementation(a => a),
+  };
 
-  expect(checkout.cart.length).toEqual(items.length);
-  expect(checkout.total())
-  .toEqual(2718.95);
-});
+  const rules = [rule1, rule2, rule3];
+  const c = new Checkout(rules);
+  c.scan(new Product("mbp", "Foo", 10.0));
+  c.total();
 
-test("Scenario 3", () => {
-  // no price rules
-  const checkout = new Checkout([
-    threeFor2AppleTV,
-    superIPad,
-    macbookVGAOffer,
-  ]);
-  const items = [
-    Macbook,
-    VGAAdapter,
-    iPad,
-  ];
-  items.forEach(i => checkout.scan(i));
-
-  expect(checkout.cart.length).toEqual(items.length);
-  expect(checkout.total())
-  .toEqual(1979.98);
+  expect(rule1.apply).toHaveBeenCalledBefore(rule2.apply);
+  expect(rule2.apply).toHaveBeenCalledBefore(rule3.apply);
 });

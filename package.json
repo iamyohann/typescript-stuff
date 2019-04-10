@@ -16,7 +16,11 @@
   },
   "jest": {
     "collectCoverage": true,
-    "coverageReporters": ["json", "html"]
+    "setupTestFrameworkScriptFile": "jest-extended",
+    "coverageReporters": [
+      "json",
+      "html"
+    ]
   },
   "author": "",
   "license": "ISC",
@@ -27,6 +31,7 @@
   "devDependencies": {
     "@types/jest": "^24.0.11",
     "jest": "^24.7.1",
+    "jest-extended": "^0.11.1",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.0.3",
     "tslint": "^5.15.0",
